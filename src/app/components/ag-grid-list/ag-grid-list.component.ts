@@ -19,25 +19,58 @@ export class AgGridListComponent {
   rowData: any[] = [];
 
   // Column Definitions: Defines the columns to be displayed.
-  colDefs: ColDef[] = [
-    { field: 'name' },
-    {
-      field: 'city',
-    },
-    { field: 'state' },
-    { field: 'state' },
-    { field: 'availableUnits' },
-    { field: 'wifi' },
-    { field: 'laundry' },
-  ];
+  colDefs: ColDef[] = [];
 
+  housingLocationsData: any[] = [];
   holidaysData: any[] = [];
 
-  constructor(private getDataService: GetDataService) {
+  constructor(private getDataService: GetDataService) {}
+
+  ngOnInit() {
     this.getDataFromService();
+    this.getHolidaysData();
   }
 
   getDataFromService() {
-    this.rowData = this.getDataService.getAllHousingLocations();
+    this.housingLocationsData = this.getDataService.getAllHousingLocations();
+  }
+
+  getHolidaysData() {
+    this.getDataService.getHolidaysData$().subscribe((data) => {
+      this.holidaysData = data;
+      console.log('Holidays Data:', this.holidaysData);
+    });
+  }
+
+  onChangeData(type: string) {
+    if (type == 'HL') {
+      this.rowData = this.housingLocationsData;
+      this.colDefs = [
+        { field: 'name' },
+        {
+          field: 'city',
+        },
+        { field: 'state' },
+        { field: 'state' },
+        { field: 'availableUnits' },
+        { field: 'wifi' },
+        { field: 'laundry' },
+      ];
+    } else {
+      this.rowData = this.holidaysData;
+      this.colDefs = [
+        { field: 'date' },
+        {
+          field: 'localName',
+        },
+        { field: 'name' },
+        { field: 'countryCode' },
+        { field: 'fixed' },
+        { field: 'global' },
+        { field: 'counties' },
+        { field: 'launchYear' },
+        { field: 'Public' },
+      ];
+    }
   }
 }

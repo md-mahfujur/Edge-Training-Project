@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +10,8 @@ export class GetDataService {
 
   readonly holidayAPI =
     'https://date.nager.at/api/v3/NextPublicHolidaysWorldwide';
+
+  private httpClient = inject(HttpClient);
 
   constructor() {}
 
@@ -118,5 +120,13 @@ export class GetDataService {
 
   getAllHousingLocations(): any[] {
     return this.housingLocationList;
+  }
+
+  getHolidaysData$(): Observable<any> {
+    return this.httpClient.get<any>(this.holidayAPI, {}).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
+    );
   }
 }
